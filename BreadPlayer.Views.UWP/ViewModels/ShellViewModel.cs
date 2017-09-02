@@ -37,7 +37,7 @@ using Windows.UI.Notifications;
 
 namespace BreadPlayer.ViewModels
 {
-	public class ShellViewModel : ViewModelBase
+    public class ShellViewModel : ViewModelBase
     {
         #region Fields
         private SymbolIcon _playPauseIcon = new SymbolIcon(Symbol.Play);
@@ -118,7 +118,7 @@ namespace BreadPlayer.ViewModels
         void HandlePlaySongMessage(Message message)
         {
             var obj = message.Payload as List<object>;
-            if(obj != null)
+            if (obj != null)
             {
                 message.HandledStatus = MessageHandledStatus.HandledCompleted;
                 var file = obj[0] as Mediafile;
@@ -131,7 +131,7 @@ namespace BreadPlayer.ViewModels
         {
             if (message.Payload != null)
             {
-                if(message.Payload is List<object>)
+                if (message.Payload is List<object>)
                 {
                     var list = message.Payload as List<object>;
                     double volume = 0;
@@ -153,12 +153,12 @@ namespace BreadPlayer.ViewModels
         }
 
         void HandleSaveSongToStopAfterMessage(Message songToStopAfter)
-        {            
-          if(songToStopAfter.Payload is Mediafile)
-          {
-            _songToStopAfter =(Mediafile)songToStopAfter.Payload;
-          }         
-        }    
+        {
+            if (songToStopAfter.Payload is Mediafile)
+            {
+                _songToStopAfter = (Mediafile)songToStopAfter.Payload;
+            }
+        }
 
         #endregion
 
@@ -181,12 +181,56 @@ namespace BreadPlayer.ViewModels
         public ICommand OpenSongCommand
         {
             get
-            { if (_openSongCommand == null) { _openSongCommand = new RelayCommand(param => this.Open(param)); } return _openSongCommand; }
+            {
+                if (_openSongCommand == null)
+                {
+                    _openSongCommand = new RelayCommand(param => this.Open(param));
+                }
+                return _openSongCommand;
+            }
         }
-        public DelegateCommand PlayPauseCommand { get { if (_playPauseCommand == null) { _playPauseCommand = new DelegateCommand(PlayPause); _playPauseCommand.IsEnabled = false; } return _playPauseCommand; } }
-        public DelegateCommand PlayNextCommand { get { if (_playNextCommand == null) _playNextCommand = new DelegateCommand(PlayNext); return _playNextCommand; } }
-        public DelegateCommand PlayPreviousCommand { get { if (_playPreviousCommand == null) _playPreviousCommand = new DelegateCommand(PlayPrevious); return _playPreviousCommand; } }
-        public DelegateCommand SetRepeatCommand { get { if (_setRepeatCommand == null) _setRepeatCommand = new DelegateCommand(SetRepeat); return _setRepeatCommand; } }
+        public DelegateCommand PlayPauseCommand
+        {
+            get
+            {
+                if (_playPauseCommand == null)
+                {
+                    _playPauseCommand = new DelegateCommand(PlayPause);
+                    _playPauseCommand.IsEnabled = false;
+                }
+                return _playPauseCommand;
+            }
+        }
+
+        public DelegateCommand PlayNextCommand
+        {
+            get
+            {
+                if (_playNextCommand == null)
+                    _playNextCommand = new DelegateCommand(PlayNext);
+                return _playNextCommand;
+            }
+        }
+
+        public DelegateCommand PlayPreviousCommand
+        {
+            get
+            {
+                if (_playPreviousCommand == null)
+                    _playPreviousCommand = new DelegateCommand(PlayPrevious);
+                return _playPreviousCommand;
+            }
+        }
+
+        public DelegateCommand SetRepeatCommand
+        {
+            get
+            {
+                if (_setRepeatCommand == null)
+                    _setRepeatCommand = new DelegateCommand(SetRepeat);
+                return _setRepeatCommand;
+            }
+        }
 
         #endregion
 
@@ -196,7 +240,7 @@ namespace BreadPlayer.ViewModels
         {
             try
             {
-                DispatcherTimer timer = new  DispatcherTimer(new BreadPlayer.Dispatcher.BreadDispatcher(Dispatcher));
+                DispatcherTimer timer = new DispatcherTimer(new BreadPlayer.Dispatcher.BreadDispatcher(Dispatcher));
                 if (QueryWord.Length < 2 && TracksCollection.Elements.Count < SongCount)
                 {
                     Messenger.Instance.NotifyColleagues(MessageTypes.MSG_SEARCH_STARTED, "Music Library");
@@ -261,7 +305,7 @@ namespace BreadPlayer.ViewModels
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await NotificationManager.ShowMessageAsync("Some error occured while playing the song. ERROR INFO: " + ex.Message);
             }
@@ -272,7 +316,7 @@ namespace BreadPlayer.ViewModels
             if (playingCollection != null && playingCollection.Any())
             {
                 try
-                {                    
+                {
                     int IndexOfCurrentlyPlayingFile = -1;
                     if (playingCollection.Any(t => t.State == PlayerState.Playing))
                         IndexOfCurrentlyPlayingFile = playingCollection.IndexOf(playingCollection.SingleOrDefault(t => t.State == PlayerState.Playing));
@@ -286,7 +330,7 @@ namespace BreadPlayer.ViewModels
                         }
                         toPlayFile = ShuffledList?.ElementAt(IndexOfCurrentlyPlayingFile + 1);
                     }
-                    else if(IsSourceGrouped)
+                    else if (IsSourceGrouped)
                     {
                         toPlayFile = GetNextSongInGroup();
                     }
@@ -320,11 +364,12 @@ namespace BreadPlayer.ViewModels
 
         async void PlayNext()
         {
-            if (Player.CurrentlyPlayingFile != null) {
-                PreviousSong= Player.CurrentlyPlayingFile;
+            if (Player.CurrentlyPlayingFile != null)
+            {
+                PreviousSong = Player.CurrentlyPlayingFile;
                 history.Do(Player.CurrentlyPlayingFile);
             }
-                
+
             Mediafile toPlayFile = await GetUpcomingSong(true);
             if (toPlayFile == null)
             {
@@ -366,7 +411,7 @@ namespace BreadPlayer.ViewModels
             var picker = new FileOpenPicker();
             FileOpenPicker openPicker = new FileOpenPicker();
             openPicker.ViewMode = PickerViewMode.Thumbnail;
-            openPicker.SuggestedStartLocation = PickerLocationId.MusicLibrary;            
+            openPicker.SuggestedStartLocation = PickerLocationId.MusicLibrary;
             openPicker.FileTypeFilter.Add(".mp3");
             openPicker.FileTypeFilter.Add(".wav");
             openPicker.FileTypeFilter.Add(".ogg");
@@ -569,7 +614,7 @@ namespace BreadPlayer.ViewModels
                 TracksCollection.AddRange(cache, false, true);
             }
         }
-       
+
         async Task<object> Search()
         {
             if (QueryWord.Length > 2)
@@ -620,7 +665,7 @@ namespace BreadPlayer.ViewModels
                     if (play == true)
                         Player.IgnoreErrors = true;
 
-                    if(_songToStopAfter!=null && (_songToStopAfter.CompareTo(PreviousSong)==0 || _songToStopAfter.CompareTo(Player.CurrentlyPlayingFile)==0))
+                    if (_songToStopAfter != null && (_songToStopAfter.CompareTo(PreviousSong) == 0 || _songToStopAfter.CompareTo(Player.CurrentlyPlayingFile) == 0))
                     {
                         PlayPause();
                         _songToStopAfter = null;
